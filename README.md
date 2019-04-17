@@ -10,7 +10,7 @@ Features:
 
 # Installation
 
-```js
+```bash
 yarn add keyword-factory
 ```
 
@@ -29,19 +29,23 @@ The default alfabet is [azAZ] for the first character and [azAZ09] for all other
 # Api
 
 ```js
-KeywordFactory(options)
+const factory = KeywordFactory(options)
+const keyword = factory.get()
 ```
 
-Options:
-- alfabets?: string | [string | [string]]
+Options is an object with following optional keys:
+- alfabets?: string | [string | [string]] 
 
   - string: used for character alfabets (each character is a possible value)
   - [string]: used for word alfabets (each array element is a value) 
+
+  NOTE: nested aray allows to specify different alfabet for every keyword character, the last alfabet is repeated
 
 - format?: value => f(value)
 - validate?: formattedValue => true when keyword is valid (invalid keywords are skipped)
 
 KeywordFactory.ALFABET0 is alfabet for the first character
+
 KeywordFactory.ALFABETN is alfabet for all other first characters
 
 
@@ -66,32 +70,26 @@ for (let i = 0; i < 8; i++) {
 ```js
 import KeywordFactory from 'keyword-factory'
 
-const factory = new KeywordFactory({alfabets: [['hello', 'world']]})
+const factory = new KeywordFactory({
+  alfabets: [['hello', 'world']]
+})
 const expected = ['hello', 'world', 'hellohello', 'worldhello', 'helloworld', 'worldworld', 'hellohellohello', 'worldhellohello']
 for (let i = 0; i < 8; i++) {
   expect(factory.get()).toBe(expected[i])
 }
 ```
 
-## Formatting the generated keyword
+## Formatting and validating the generated keyword
 
 ```js
 import KeywordFactory from 'keyword-factory'
 
-const factory = new KeywordFactory({alfabets: '01', format: value => '-' + value, validate: value => value !== '-00'})
+const factory = new KeywordFactory({
+  alfabets: '01', 
+  format: value => '-' + value, 
+  validate: value => value !== '-00'
+})
 const expected = ['-0', '-1', '-10', '-01']
-for (let i = 0; i < 4; i++) {
-  expect(factory.get()).toBe(expected[i])
-}
-```
-
-## Skip keywords that do not validate
-
-```js
-import KeywordFactory from 'keyword-factory'
-
-const factory = new KeywordFactory({alfabets: '01', validate: value => value !== '00'})
-const expected = ['0', '1', '10', '01']
 for (let i = 0; i < 4; i++) {
   expect(factory.get()).toBe(expected[i])
 }
